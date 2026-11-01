@@ -1,0 +1,17 @@
+{
+  "name": "workshop-mcp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PHPMatsuri Reboot 2026 ワークショップ「ダッシュボードの前にMCPを書こう」",
+  "workspaces": [
+    "starter"
+  ],
+  "scripts": {
+    "doctor": "node scripts/doctor.mjs",
+    "build": "npm run build --workspaces"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}
