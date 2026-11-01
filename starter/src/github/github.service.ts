@@ -5,6 +5,8 @@ import { Injectable } from '@nestjs/common';
  *
  * 集計はせず、AI がそのまま分析できる生データを返す。
  * 曜日別・リポジトリ別・PRマージ率などの集計は AI に任せる。
+ *
+ * username を省略すると、GITHUB_TOKEN の持ち主（自分）のデータを返す。
  */
 
 export interface Commit {
@@ -40,23 +42,35 @@ const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'];
 
 @Injectable()
 export class GitHubService {
-  async getContributions(username: string, days = 30): Promise<Contributions> {
+  private authenticatedLogin: string | null = null;
+
+  async getContributions(username?: string, days = 30): Promise<Contributions> {
+    const login = username || (await this.getAuthenticatedLogin());
     const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
       .toISOString()
       .slice(0, 10);
 
     const [commitResult, prResult] = await Promise.all([
-      this.search('commits', `author:${username} committer-date:>=${since}`),
-      this.search('issues', `type:pr author:${username} created:>=${since}`),
+      this.search('commits', `author:${login} committer-date:>=${since}`),
+      this.search('issues', `type:pr author:${login} created:>=${since}`),
     ]);
 
     return {
-      username,
+      username: login,
       since,
       commits: commitResult.items.map((item) => this.toCommit(item)),
       pullRequests: prResult.items.map((item) => this.toPullRequest(item)),
       truncated: commitResult.truncated || prResult.truncated,
     };
+  }
+
+  // トークンの持ち主のユーザー名。1回取ったら覚えておく
+  private async getAuthenticatedLogin(): Promise<string> {
+    if (!this.authenticatedLogin) {
+      const user = await this.request('/user');
+      this.authenticatedLogin = user.login as string;
+    }
+    return this.authenticatedLogin;
   }
 
   private toCommit(item: any): Commit {

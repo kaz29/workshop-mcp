@@ -9,6 +9,7 @@ import { GitHubService } from '../github/github.service';
  * やること
  *   1. @Tool() デコレータでツールを定義する（name / description / parameters）
  *   2. GitHubService の getContributions(username, days) を呼んで、結果をそのまま返す
+ *      （username を省略すると、GITHUB_TOKEN の持ち主＝自分のデータになります）
  *
  * ヒント
  *   - ping.tool.ts が最小の例です
