@@ -126,12 +126,23 @@ npm run build
 
 してから、AI クライアントを再起動（または MCP サーバーを再接続）してください。そうしないと新しいツールが読み込まれません。
 
+### Step 2 で詰まったら
+
+解答例を上書きコピーして、ビルドし直してください（自分で書いた内容は消えます）。
+
+```bash
+cp complete/github.tool.ts starter/src/mcp/github.tool.ts
+npm run build
+```
+
 ## ディレクトリ構成
 
 ```
 workshop-mcp/
 ├── .env                 # GITHUB_TOKEN（自分で作成）
 ├── scripts/doctor.mjs   # 環境チェック
+├── complete/
+│   └── github.tool.ts   # Step 2 の解答例（詰まったときだけ）
 └── starter/             # ここで作業します
     └── src/
         ├── main.ts                     # エントリーポイント（stdio）
