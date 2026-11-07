@@ -76,7 +76,7 @@ npm run doctor
 #### Claude Code
 
 ```bash
-claude mcp add workshop-mcp -- <command> <args>
+claude mcp add workshop-mcp -- node [YOUR_PATH]/workshop-mcp/starter/dist/main.js
 ```
 
 Claude Code を起動して `/mcp` で `workshop-mcp` が connected になっていればOKです。
@@ -135,6 +135,31 @@ cp complete/github.tool.ts starter/src/mcp/github.tool.ts
 npm run build
 ```
 
+### 時間が余った人へ
+
+ツールを増やして、AI に聞けることを広げてみましょう。おすすめは次の 3 つです。
+
+| ツール | 取ってくるもの | AI への質問例 |
+|--------|----------------|---------------|
+| `get_reviews` | 自分がレビューした他の人の PR | 「書いた PR とレビューした PR、どっちが多い？」「誰の PR をよくレビューしてる？」 |
+| `get_repositories` | リポジトリ一覧（言語・スター数・最終 push 日時） | 「よく使う言語は？」「半年以上放置しているリポジトリは？」 |
+| `get_pull_request_detail` | PR 1 件の詳細（追加・削除行数、変更ファイル数、コメント数） | 「大きい PR ほどマージに時間がかかってる？」 |
+
+ヒント
+
+- 今度は `GitHubService`（`starter/src/github/github.service.ts`）にもメソッドを足します。中にある `request()`（REST API）と `search()`（Search API）が使えます
+- `get_reviews` は、`getContributions()` の PR 検索のクエリを `type:pr reviewed-by:<ユーザー名> -author:<ユーザー名>` に変えるだけで作れます
+- `get_pull_request_detail` には PR 番号が必要です。`PullRequest` に `number` を追加しておくと、AI が `get_contributions` の結果から番号を拾ってくれます
+- description に「どのツールと組み合わせて使うか」を書くと、AI がツールを連携して使ってくれます
+
+解答例（自分で書いた内容は消えます）
+
+```bash
+cp complete/extra/github.service.ts starter/src/github/github.service.ts
+cp complete/extra/github.tool.ts starter/src/mcp/github.tool.ts
+npm run build
+```
+
 ## ディレクトリ構成
 
 ```
@@ -142,7 +167,8 @@ workshop-mcp/
 ├── .env                 # GITHUB_TOKEN（自分で作成）
 ├── scripts/doctor.mjs   # 環境チェック
 ├── complete/
-│   └── github.tool.ts   # Step 2 の解答例（詰まったときだけ）
+│   ├── github.tool.ts   # Step 2 の解答例（詰まったときだけ）
+│   └── extra/           # 「時間が余った人へ」の解答例
 └── starter/             # ここで作業します
     └── src/
         ├── main.ts                     # エントリーポイント（stdio）
